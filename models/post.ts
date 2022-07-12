@@ -31,6 +31,6 @@ export const Post = connection.define('post', {
      
     
 }, {
-    timestamps: false
+    timestamps: true
 })
 

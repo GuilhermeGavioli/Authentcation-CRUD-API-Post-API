@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../styles/dashboard.css">
+
+
+    <link
+      rel="shortcut icon"
+      href="../assets/whitelogo.png"
+      type="image/x-icon"
+    />
+
+    <!-- font awersome icons -->
+    <script
+      src="https://kit.fontawesome.com/69266619cf.js"
+      crossorigin="anonymous"
+    ></script>
+
+    <title>Dashboard - protected page</title>
+</head>
+<body>
+    <div class="curtain-container">
+
+        <button id="logout-btn">
+            Logout
+        </button>
+        
+        <form class="main-container">
+
+        <div class="title-logo-container">
+            <h1 id="welcome-title">Bem-vindo, </h1>
+            <img src="../../assets/whitelogo.png" alt="logo" class="logo-img">
+        </div>
+
+
+        <div class="input-icon-container">
+            <textarea id="post-textarea" type="text" rows="8" placeholder="O que voce esta pensando?" value="" id="" maxlength="240" ></textarea>
+        </div>
+        
+        <div id="create-btn-container">
+            <button id="create-btn">
+                Create
+            </button>
+
+        </div>
+
+
+        <div id="plus-btn" onclick="(e)=>{e.preventDefault()}">
+            <i class="fa-solid fa-plus"></i>
+        </div>
+
+
+        <button id="see-all-my-posts-btn">
+               ver todos meus posts...
+           </button>
+        <button id="see-all-btn">
+               ver todos...
+           </button>
+
+
+        </form>
+
+        
+        <ul class="second-main-container">
+            <li>asokcokokcsa</li>
+            <li>asokcokokcsaaos</li>
+            
+            
+            
+        </ul>
+        <button id="go-right-btn">go right</button>
+        <button id="go-left-btn">go left</button>
+        
+
+    </div>
+
+</body>
+
+
+
+
+<script defer>
+
+    let userData;
+    let postData;
+
+    window.onload = async () => {
+        console.log('protected here haha fuck u bastard not gonna access it')
+        const authTokenCookie = localStorage.getItem("auth-token-cookie")
+
+        const res = await fetch('http://localhost:3333/verifyauthorization', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': authTokenCookie || null
+            }
+        });
+        const data = await res.json()
+        if(data.error) {window.location.href = '/login'} 
+        else{
+            document.getElementById('welcome-title').innerText += " " + data.tokeninfo.name + "!"
+            console.log(data.tokeninfo)
+            userData = data.tokeninfo
+            postData = data.post
+        }
+    }
+
+    
+    const textarea = document.getElementById("post-textarea")
+    const authTokenCookie = localStorage.getItem("auth-token-cookie")
+
+    document.getElementById("create-btn").addEventListener("click", async (e) => {
+        e.preventDefault();
+        const res = await fetch(`http://localhost:3333/post/create/${textarea.value}`, {
+            method: 'POST',
+            headers: { "Content-Type": "application/json", "authorization": authTokenCookie || null },
+        })
+        const data = await res.json();
+        console.log(data)
+        
+        if (!data.error){
+            alert('Post created')
+            textarea.value = ""
+        }
+
+
+    })
+
+    document.getElementById("go-right-btn").addEventListener("click", (e)=>{
+        e.preventDefault();
+        // console.log(document.querySelector('.second-main-container').scrollWidth)
+        document.querySelector('.second-main-container').scrollLeft += 25
+        // document.querySelector('.second-main-container').scrollTo(document.querySelector('.second-main-container').scrollWidth ,0)
+
+
+    })
+
+
+    document.querySelector(".second-main-container").addEventListener("scroll", (e)=>{
+        e.preventDefault();
+        console.log(e.target.scrollLeft)
+        // document.querySelector('.second-main-container').scrollTo(document.querySelector('.second-main-container').scrollWidth ,0)
+
+    })
+
+
+
+    document.getElementById("see-all-my-posts-btn").addEventListener("click", async (e) => {
+        e.preventDefault();
+        
+        const res = await fetch(`http://localhost:3333/post/findmany/${userData.id}`)
+        const data = await res.json();
+        console.log(data)
+
+        const mainDiv = document.querySelector('.second-main-container')
+        data.post.map(post => {
+            const li = document.createElement('li')
+            const div = document.createElement('div')
+            thrashIconDiv = document.createElement('div')
+            thrashIconDiv.id = "thrash-icon"
+            thrashIconDiv.innerText = "delete"
+            thrashIconDiv.addEventListener("click", async (e)=>{
+                e.preventDefault();
+                console.log(post)
+                const res = await fetch(`http://localhost:3333/post/delete/${post.id}`, {method: 'DELETE',
+                        headers: {"Content-Type": 'application/json', 'authorization': localStorage.getItem("auth-token-cookie") || null}
+            })
+                const data = await res.json();
+                console.log(data)
+                alert('Deleted succefully')
+            })
+
+
+            div.innerText = post.createdAt
+            div.id = "time-stamp"
+            li.innerText = post.text
+            li.append(div)
+            li.append(thrashIconDiv)
+            mainDiv.append(li)
+        })
+
+
+        
+
+
+
+        // window.location.href = `/post/findmany/${userData.id}`
+    })
+
+    document.getElementById("see-all-btn").addEventListener("click", (e) => {
+        e.preventDefault();
+
+
+        window.location.href = "/post/viewall"
+    })
+    
+    document.getElementById("logout-btn").addEventListener("click", (e) =>{
+        e.preventDefault();
+        // localStorage.clear()
+        localStorage.removeItem("auth-token-cookie");
+        window.location.href = "/login"
+    })
+
+
+</script>
+</html>

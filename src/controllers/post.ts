@@ -72,6 +72,17 @@ export const PostController = {
         }
         
     },
+    post_queryMany_from_a_user_get: async function (req: Request, res: Response) {
+        const { ownerId } = req.params
+        // const { userInfo } = res.locals
+        try {
+            const returnedPost = await PostInstancy.findManyFromUser(ownerId)
+            return res.json({ error: false, status: 200, message: "Successfully querried.", post: returnedPost })
+        } catch (err) {
+            return res.json("Ops, something went wrong.")
+        }
+        
+    },
     //query many posts from a user
 
     // query all posts from db

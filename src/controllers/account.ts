@@ -1,10 +1,11 @@
 import { Request, Response } from "express"
 
-import { uuid } from 'uuidv4';
+
 import { Post } from "../../models/post";
 
+import { uuid } from 'uuidv4';
 import jwt from 'jsonwebtoken'
-
+import bcrypt from 'bcrypt'
 
 
 import dotenv from 'dotenv'
@@ -25,7 +26,7 @@ export const accountControllers = {
     register_post: async (req: Request, res: Response) => { 
         const { name, email, password } = req.body
         const id = uuid()
-        
+
         try {
 
             const userExists = await UserInstancy.exists(email)
@@ -33,7 +34,10 @@ export const accountControllers = {
                 res.locals.message = "User already exists."
                 throw new Error("User already exists.")
             }
-            await UserInstancy.create({ id, name, email, password })
+
+            const safePassword = await bcrypt.hash(password, 10);
+
+            await UserInstancy.create({ id, name, email, password: safePassword})
 
             const token = jwt.sign({ id, name, email }, secretToken, { expiresIn: '1h' })
             
@@ -46,6 +50,7 @@ export const accountControllers = {
 
     login_post: async (req: Request, res: Response) => { 
         const { email, password } = req.body
+        console.log(email, password)
         try {
 
             const userExists = await UserInstancy.exists(email)
@@ -54,17 +59,19 @@ export const accountControllers = {
                 res.locals.message = "User does not exist."
                 throw new Error("User does not exist.")
             }
-
+            
             const foundUser = await UserInstancy.find(email)
-
-            const token = jwt.sign({ id: foundUser.id, name: foundUser.name, email: foundUser.email }, secretToken, { expiresIn: '1h' })
+            
+            const passwordMatch = await bcrypt.compare(password, foundUser.password)
+            if (!passwordMatch) {
+                res.locals.message = "Passwords do not match."
+                throw new Error("Passwords do not match.")
+            }
            
+            const token = jwt.sign({ id: foundUser.id, name: foundUser.name, email: foundUser.email }, secretToken, { expiresIn: '1h' })
             return res.json({error: false, status: 200, message: "Success.", token})
            
-            
-            
         } catch (err) {
-            
             return res.json({error: true, status: 400, message: `Failed. ${res.locals.message}`})
     }
 

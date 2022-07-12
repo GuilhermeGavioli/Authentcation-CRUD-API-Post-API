@@ -5,6 +5,7 @@ interface IPostClass {
     findOne(id: string): Promise<IPost>,
     delete(id: string, owner: string): Promise<void>,
     findAll(): Promise<ISecurePost[]>,
+    findManyFromUser(ownerId: string): Promise<ISecurePost>
 }
 
 interface IPost {
@@ -14,8 +15,10 @@ interface IPost {
 }
 
 interface ISecurePost { 
+    id?: string,
     text: string,
-    owner: string
+    owner: string,
+    createdAt?: Date,
 }
  
 
@@ -64,6 +67,19 @@ class PostClass implements IPostClass {
             JSON.stringify(
                 await Post.findAll({
                     attributes: ["text", "owner"]
+                })
+            )
+        )
+    }
+
+    async findManyFromUser(ownerId: string) {
+        return JSON.parse(
+            JSON.stringify(
+                await Post.findAll({
+                    attributes: ["id", "text", "owner", "createdAt"],
+                    where: {
+                        owner: ownerId
+                    }
                 })
             )
         )

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="../styles/login & register.css">
+    <link rel="shortcut icon" href="../assets/whitelogo.png" type="image/x-icon">
+
+    <!-- font awersome icons -->
+    <script src="https://kit.fontawesome.com/69266619cf.js" crossorigin="anonymous"></script> 
+</head>
+<body>
+    <div class="curtain-container">
+
+            <div class="main-container">
+
+                <div class="logo-img-container">
+                    <img src="../assets/whitelogo.png" alt="logo" class="logo-img">
+                </div>
+
+                <div class="input-icon-container">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" placeholder="Name" id="name-input-field">
+                </div>
+
+                <div class="input-icon-container">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="text" placeholder="Email" id="email-input-field">
+                </div>
+
+                <div class="input-icon-container">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" placeholder="Password" id="password-input-field">
+                </div>
+
+
+               
+                <button id="register-btn">
+                
+                    Register
+                </button>
+
+                <div class="phrase-container">
+                    <span>Have an account already? <a href="/login">  Login</a></span>
+                </div>
+
+
+            </div>
+    
+    
+    </div>
+
+
+
+</body>
+
+
+<script defer>
+    
+    window.onload = async () => {
+        const authTokenCookie = localStorage.getItem("auth-token-cookie")
+        const res = await fetch('http://localhost:3333/verifyauthorization', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'authorization': authTokenCookie || null
+            }
+        });
+        const data = await res.json()
+        if(!data.error) window.location.href = '/dashboard'
+    }
+
+
+
+
+    let name = document.getElementById('name-input-field');
+    let email = document.getElementById('email-input-field');
+    let password = document.getElementById('password-input-field');
+
+    document.getElementById('register-btn').addEventListener("click", async (e) => {    
+        e.preventDefault();
+
+        console.log(name.value)
+        console.log(email.value)
+        console.log(password.value)
+        const returned = quickvalidation(name.value, email.value, password.value);
+
+        if (returned.isvalid) {
+            const foundToken = localStorage.getItem("auth-token-cookie");
+            const res = await fetch('http://localhost:3333/account/register', {
+                method: "POST",
+                body: JSON.stringify({name: name.value, email: email.value, password: password.value}),
+                headers: {"Content-type": "application/json",
+                "authorization": foundToken || null
+                }
+            }
+        );
+
+            const data = await res.json();
+            console.log(data)
+            if (!data.error){
+                localStorage.setItem("auth-token-cookie", data.token)
+                window.location.href = "/dashboard"
+            }
+
+
+
+        } else {
+            alert(returned.message)
+        }
+
+
+    
+     
+
+    })
+
+
+    function quickvalidation(name, email, password){
+        if (name.trim() === "" || email.trim() === "" || password.trim() === "") return {isvalid: false, message: "Empty field"}
+        if (name.length > 50 || email.length >= 150 || password.length >= 50) return {isvalid: false, message: "Field is too long."}
+        if (name.length < 3 || email.length <= 6 || password.length < 6) return {isvalid: false, message: "Field is too short."}
+        return {isvalid: true, message: "Success"}
+    }
+
+  </script>
+
+
+</html>

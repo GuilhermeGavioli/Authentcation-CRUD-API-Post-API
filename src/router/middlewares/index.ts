@@ -26,6 +26,7 @@ export async function VerifyToken(req: Request, res: Response, next: NextFunctio
   
     const token = req.headers['authorization']
 
+
     if (!token) return res.json({ error: true, status: 403, message: "Not authorized" })
     else {
         try {
