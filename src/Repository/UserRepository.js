@@ -1,28 +1,12 @@
-interface IUserClass {
-    exists(email: string): Promise<boolean>,
-    create(user: IUser): Promise<void>,
-    find(emailParam: string): Promise<IUser>,
-    findAll(): Promise<ISecureUser[]>
-}
 
-interface IUser {
-    id: string,
-    name: string,
-    email: string,
-    password: string,
-}
- 
-interface ISecureUser { 
-    name: string,
-}
 
 
 import { User } from "../../models/user"
 
-class UserClass implements IUserClass {
+class UserClass {
 
     //Check If User Exists
-    async exists(email: string) {
+    async exists(email) {
         const returned = await User.findOne({
             where: {
                 email: email
@@ -34,7 +18,7 @@ class UserClass implements IUserClass {
     
 
     //Create User
-    async create(user: IUser): Promise<void> {
+    async create(user) {
         await User.create({
             id: user.id, name: user.name, email: user.email, password: user.password
         })
@@ -42,7 +26,7 @@ class UserClass implements IUserClass {
     
 
     //Find a User
-    async find(emailParam: string): Promise<IUser> {
+    async find(emailParam) {
         //Find user
         const returned = await User.findOne({
             attributes: ["id", "name", "email", "password"],

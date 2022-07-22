@@ -1,4 +1,4 @@
-import { Request, Response } from "express"
+
 
 
 import { Post } from "../../models/post";
@@ -16,14 +16,14 @@ import { UserInstancy } from "../Repository/UserRepository";
 
 
 
-const secretToken: string = (process.env.SECRET_TOKEN as string);
+
 
 
 
 
 export const accountControllers = {
 
-    register_post: async (req: Request, res: Response) => { 
+    register_post: async (req, res) => { 
         const { name, email, password } = req.body
         const id = uuid()
 
@@ -39,7 +39,7 @@ export const accountControllers = {
 
             await UserInstancy.create({ id, name, email, password: safePassword})
 
-            const token = jwt.sign({ id, name, email }, secretToken, { expiresIn: '1h' })
+            const token = jwt.sign({ id, name, email }, process.env.SECRET_TOKEN, { expiresIn: '1h' })
             
             return res.json({ error: false, status: 200, message: "User Successfully created.", token })
             
@@ -48,7 +48,7 @@ export const accountControllers = {
         }
     },
 
-    login_post: async (req: Request, res: Response) => { 
+    login_post: async (req, res) => { 
         const { email, password } = req.body
         console.log(email, password)
         try {
@@ -68,7 +68,7 @@ export const accountControllers = {
                 throw new Error("Passwords do not match.")
             }
            
-            const token = jwt.sign({ id: foundUser.id, name: foundUser.name, email: foundUser.email }, secretToken, { expiresIn: '1h' })
+            const token = jwt.sign({ id: foundUser.id, name: foundUser.name, email: foundUser.email }, process.env.SECRET_TOKEN, { expiresIn: '1h' })
             return res.json({error: false, status: 200, message: "Success.", token})
            
         } catch (err) {
@@ -77,7 +77,7 @@ export const accountControllers = {
 
     },
 
-    view_all_users_get: async (req: Request, res: Response) => { 
+    view_all_users_get: async (req, res) => { 
 
         try { 
             const allPosts = await UserInstancy.findAll();

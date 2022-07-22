@@ -4,7 +4,7 @@ export const router = express.Router();
 
 import { PostController } from '../controllers/post'
 
-import { VerifyToken } from '../router/middlewares/index'
+import { VerifyToken } from './middlewares/index'
 
 
 router.post('/create/:text',VerifyToken, PostController.create_post)

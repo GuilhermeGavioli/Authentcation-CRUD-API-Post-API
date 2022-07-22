@@ -1,13 +1,14 @@
-import { Request, Response } from 'express'
-
 
 
 import { uuid } from 'uuidv4'
 import { PostInstancy } from '../Repository/PostRepository'
 
+import dotenv from 'dotenv'
+dotenv.config();
+
 export const PostController = {
 
-    create_post: async function (req: Request, res: Response) {
+    create_post: async function (req, res) {
         const { text } = req.params
         const { userInfo } = res.locals
         try {
@@ -20,7 +21,7 @@ export const PostController = {
 
     },
 
-    post_delete: async function (req: Request, res: Response) {
+    post_delete: async function (req, res) {
         const { id } = req.params
         const { userInfo } = res.locals
 
@@ -41,7 +42,7 @@ export const PostController = {
         }
 
     },
-    post_update: async function (req: Request, res: Response) {
+    post_update: async function (req, res) {
         const { id, newText } = req.params
         const { userInfo } = res.locals
     
@@ -61,7 +62,7 @@ export const PostController = {
 
         }
     },
-    post_queryOne_get: async function (req: Request, res: Response) {
+    post_queryOne_get: async function (req, res) {
         const { id } = req.params
         // const { userInfo } = res.locals
         try {
@@ -72,7 +73,7 @@ export const PostController = {
         }
         
     },
-    post_queryMany_from_a_user_get: async function (req: Request, res: Response) {
+    post_queryMany_from_a_user_get: async function (req, res) {
         const { ownerId } = req.params
         // const { userInfo } = res.locals
         try {
@@ -86,7 +87,7 @@ export const PostController = {
     //query many posts from a user
 
     // query all posts from db
-    post_queryAll_get: async function (req: Request, res: Response) {
+    post_queryAll_get: async function (req, res) {
         try { 
             const allPosts = await PostInstancy.findAll();
             return res.json({ error: false, status: 200, message: "Successfully querried.", post: allPosts})

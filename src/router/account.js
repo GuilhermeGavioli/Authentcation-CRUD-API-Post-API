@@ -5,7 +5,7 @@ export const router = express.Router();
 
 
 
-import { VerifyTokenReverse } from '../router/middlewares/index'
+import { VerifyTokenReverse } from './middlewares/index'
 
 
 router.post('/register',VerifyTokenReverse, accountControllers.register_post)

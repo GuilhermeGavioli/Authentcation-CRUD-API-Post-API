@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "ts-node-dev ./src/server.ts",
+    "dev": "nodemon --exec babel-node src/server.js",
     "build": "tsc",
     "postbuild": "copyfiles -u 1 ./src/views/html/**/index.ejs ./src/views/javascript/login.js ./src/views/styles/*.css ./config/config.js ./dist/src/",
     "start": "node ./dist/src/server.js"
@@ -23,11 +24,15 @@
     "uuidv4": "^6.2.13"
   },
   "devDependencies": {
+    "@babel/core": "^7.18.9",
+    "@babel/node": "^7.18.9",
+    "@babel/preset-env": "^7.18.9",
     "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.13",
     "@types/jsonwebtoken": "^8.5.8",
     "@types/node": "^18.0.0",
     "copyfiles": "^2.4.1",
+    "nodemon": "^2.0.19",
     "sequelize-cli": "^6.4.1",
     "ts-node-dev": "^2.0.0",
     "typescript": "^4.7.4"

@@ -1,11 +1,12 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.connection = void 0;
-const sequelize_1 = require("sequelize");
-exports.connection = new sequelize_1.Sequelize({
+import { Sequelize } from "sequelize";
+
+import dotenv from'dotenv'
+dotenv.config();
+
+export const connection = new Sequelize({
     dialect: 'mysql',
     host: 'localhost',
-    username: 'root',
+    username: 'bionic',
     password: '123456Seven##',
     database: 'postapp'
-});
+})

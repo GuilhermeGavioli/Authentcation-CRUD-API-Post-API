@@ -1,33 +1,11 @@
 
-interface IPostClass {
-    create(postId: string, text:string, ownerId: string): Promise<void>,
-    update(id: string, owner: string, newText: string): Promise<void>,
-    findOne(id: string): Promise<IPost>,
-    delete(id: string, owner: string): Promise<void>,
-    findAll(): Promise<ISecurePost[]>,
-    findManyFromUser(ownerId: string): Promise<ISecurePost>
-}
 
-interface IPost {
-    id: string,
-    text: string,
-    owner: string,
-}
-
-interface ISecurePost { 
-    id?: string,
-    text: string,
-    owner: string,
-    createdAt?: Date,
-}
- 
 
 import { Post } from "../../models/post"
-
-class PostClass implements IPostClass {
+class PostClass {
 
     //Create User
-    async create(postId: string, text: string, ownerId: string): Promise<void> {
+    async create(postId, text, ownerId) {
         await Post.create({
             id: postId , text, owner: ownerId
         })
@@ -35,7 +13,7 @@ class PostClass implements IPostClass {
     
 
     //Find a User
-    async update(id: string, owner: string, newText: string) {
+    async update(id, owner, newText) {
       
         await Post.update({ text: newText }, {
             where: {id: id, owner: owner}
@@ -44,7 +22,7 @@ class PostClass implements IPostClass {
        
     }
 
-    async findOne(id: string){
+    async findOne(id){
         const foundPost = await Post.findOne({
             attributes: ["id", "owner", 'text'],
             where: {id: id}
@@ -53,7 +31,7 @@ class PostClass implements IPostClass {
         return JSON.parse(JSON.stringify(foundPost));
     }
 
-    async delete(id: string, owner: string) {
+    async delete(id, owner) {
         const post = await Post.findOne({
             attributes: ["id", "text", 'owner'],
             where: { id: id, owner: owner }
@@ -72,7 +50,7 @@ class PostClass implements IPostClass {
         )
     }
 
-    async findManyFromUser(ownerId: string) {
+    async findManyFromUser(ownerId) {
         return JSON.parse(
             JSON.stringify(
                 await Post.findAll({

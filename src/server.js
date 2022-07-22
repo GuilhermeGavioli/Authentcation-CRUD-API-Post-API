@@ -8,13 +8,19 @@ dotenv.config()
 app.use(express.json());
 app.use(express.urlencoded({extended: false}))
 
-import { connection } from '../database/connection'
+
+import { connection }  from '../database/connection'
 
 
-async function connectToDatabase() { 
-    await connection.authenticate();
+async function connectToDatabase() {
+    try {
+        await connection.authenticate();
+        console.log("Connected")
+    } catch (err) {
+        console.log('Something went wrong')
+        console.log('\n', err)
+     }
     // await connection.sync()
-    console.log("Connected")
 }
 
 connectToDatabase()
@@ -26,7 +32,12 @@ app.use('/account', AccountRouter)
 app.use('/post', PostRouter)
 
 import path from 'path'
-// app.use(express.static(path.resolve(__dirname, 'views')))
+import { fileURLToPath, } from 'url'
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+
+app.use(express.static(path.resolve(__dirname, 'views')))
 
 import { VerifyToken, VerifyTokenReverse } from './router/middlewares/index'
 
@@ -46,7 +57,6 @@ app.get('/register', VerifyTokenReverse, (req, res) => {
  
 app.get('/dashboard', (req, res) => {
     res.render(path.join(__dirname, 'views', 'html', 'dashboard', 'index.ejs'))
-    // VerifyToken
 })
 app.get('/testing', (req, res) => {
     res.send('test')
@@ -64,7 +74,7 @@ app.post('/verifyauthorization', (req, res) => {
     if (!token) { return res.json({ error: true, status: 403, message: "Not authorized" }) }
     else {
         try {
-            const decoded = jwt.verify(token, process.env.SECRET_TOKEN as string)
+            const decoded = jwt.verify(token, process.env.SECRET_TOKEN)
             res.locals.userInfo = decoded
             return res.json({ error: false, status: 200, message: "Success", tokeninfo: decoded })
         } catch (err) {
