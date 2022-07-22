@@ -32,12 +32,12 @@ import { VerifyToken, VerifyTokenReverse } from './router/middlewares/index'
 
 
 app.set('view engine', 'ejs');
-app.use(express.static(path.resolve(__dirname, '../', 'src', 'views')))
+app.use(express.static(path.resolve(__dirname, 'views')))
 
-console.log(path.resolve(__dirname,'../', 'src', 'views', 'html', 'login', 'index.ejs'))
+console.log(path.resolve(__dirname, 'src', 'views', 'html', 'login', 'index.ejs'))
 
 app.get('/login', (req, res) => {
-    res.render(path.resolve(__dirname,'src', 'views', 'html', 'login', 'index.ejs'))
+    res.render(path.resolve(__dirname, 'views', 'html', 'login', 'index.ejs'))
  })
 
 app.get('/register', VerifyTokenReverse, (req, res) => {
@@ -50,7 +50,6 @@ app.get('/dashboard', (req, res) => {
 })
 app.get('/testing', (req, res) => {
     res.send('test')
-    // VerifyToken
 })
  
 

@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev ./src/server.ts",
     "build": "tsc",
-    "postbuild": "copyfiles -u 1 ./src/views/html/**/index.ejs ./src/views/javascript/login.js ./src/views/styles/*.css ./dist/src/",
+    "postbuild": "copyfiles -u 1 ./src/views/html/**/index.ejs ./src/views/javascript/login.js ./src/views/styles/*.css ./config/config.js ./dist/src/",
     "start": "node ./dist/src/server.js"
   },
   "author": "",
